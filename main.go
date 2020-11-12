@@ -16,7 +16,7 @@ var commands = []tgbotapi.BotCommand{
 func main() {
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
-		log.Panic(err)
+		log.Panic("ENV TELEGRAM_APITOKEN ", err)
 	}
 	bot.Debug = true
 	log.Printf("Authorized on account %s", bot.Self.UserName)
