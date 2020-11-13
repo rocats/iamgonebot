@@ -5,9 +5,12 @@ import (
 	"strings"
 )
 
+const SLD = "哦噢喔耶啊哇呀哎哟阿啊呃欸哇呀也耶哟欤呕噢呦嘢吧罢呗啵的价家啦来唻嘞哩咧咯啰喽吗嘛嚜么麽哪呢呐否呵哈不兮般则连罗给噻哉呸了"
+
 func iamgone(bot *tgbotapi.BotAPI, update tgbotapi.Update) (ok bool) {
-	if strings.HasPrefix(update.Message.Text, "我") &&
-		strings.HasSuffix(update.Message.Text, "了") {
+	if t := strings.TrimRight(update.Message.Text, strings.ReplaceAll(SLD, "了", ""));
+		strings.HasPrefix(t, "我") &&
+			strings.HasSuffix(t, "了") {
 		handleErr(bot.PinChatMessage(tgbotapi.PinChatMessageConfig{
 			ChatID:              update.Message.Chat.ID,
 			MessageID:           update.Message.MessageID,
