@@ -9,11 +9,21 @@ import (
 const SLD = "哦噢喔耶啊哇呀哎哟阿啊呃欸哇呀也耶哟欤呕噢呦嘢吧罢呗啵的价家啦来唻嘞哩咧咯啰喽吗嘛嚜么麽哪呢呐否呵哈不兮般则连罗给噻哉呸了"
 
 func consecutiveHanMixedSpace(str string) bool {
-	fields := strings.Fields(str)
-	for i := 1; i < len(fields); i++ {
-		if unicode.Is(unicode.Han, rune(fields[i][0])) &&
-			unicode.Is(unicode.Han, rune(fields[i-1][len(fields[i-1])-1])) {
-			return true
+	runes := []rune(str)
+	preSpace := false
+	lastPos := -1
+	for i := range runes {
+		if unicode.IsSpace(runes[i]) {
+			if i > 0 && !preSpace {
+				preSpace = true
+				lastPos = i - 1
+			}
+		} else if preSpace {
+			preSpace = false
+			if unicode.Is(unicode.Han, runes[lastPos]) &&
+				unicode.Is(unicode.Han, runes[i]) {
+				return true
+			}
 		}
 	}
 	return false
