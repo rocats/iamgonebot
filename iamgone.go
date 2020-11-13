@@ -8,7 +8,7 @@ import (
 
 const SLD = "哦噢喔耶啊哇呀哎哟阿啊呃欸哇呀也耶哟欤呕噢呦嘢吧罢呗啵的价家啦来唻嘞哩咧咯啰喽吗嘛嚜么麽哪呢呐否呵哈不兮般则连罗给噻哉呸了"
 
-func consecutiveHanMixedSpace(str string) bool {
+func consecutiveHanLetterMixedSpace(str string) bool {
 	runes := []rune(str)
 	preSpace := false
 	lastPos := -1
@@ -23,18 +23,38 @@ func consecutiveHanMixedSpace(str string) bool {
 			if unicode.Is(unicode.Han, runes[lastPos]) &&
 				unicode.Is(unicode.Han, runes[i]) {
 				return true
+			} else if (unicode.Is(unicode.Han, runes[lastPos]) ||
+				unicode.Is(unicode.Han, runes[i])) &&
+				(unicode.Is(unicode.Letter, runes[lastPos]) ||
+					unicode.Is(unicode.Letter, runes[i])) {
+				return true
 			}
 		}
 	}
 	return false
 }
 
+func trim(str string) string {
+	ban := strings.ReplaceAll(SLD, "了", "")
+	str = strings.TrimRightFunc(str, func(r rune) bool {
+		return !unicode.Is(unicode.Han, r) || strings.ContainsRune(ban, r)
+	})
+	str = strings.TrimLeftFunc(str, func(r rune) bool {
+		return !unicode.Is(unicode.Han, r) || strings.ContainsRune(ban, r)
+	})
+	return str
+}
+
+func shouldPin(str string) bool {
+	t := trim(str)
+	return strings.HasPrefix(t, "我") &&
+		strings.HasSuffix(t, "了") &&
+		!strings.ContainsAny(t, "，,") &&
+		!consecutiveHanLetterMixedSpace(t)
+}
+
 func iamgone(bot *tgbotapi.BotAPI, update tgbotapi.Update) (ok bool) {
-	if t := strings.TrimRight(update.Message.Text, strings.ReplaceAll(SLD, "了", ""));
-		strings.HasPrefix(t, "我") &&
-			strings.HasSuffix(t, "了") &&
-			!strings.ContainsAny(t, "，,") &&
-			!consecutiveHanMixedSpace(t) {
+	if shouldPin(update.Message.Text) {
 		handleErr(bot.PinChatMessage(tgbotapi.PinChatMessageConfig{
 			ChatID:              update.Message.Chat.ID,
 			MessageID:           update.Message.MessageID,
