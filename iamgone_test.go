@@ -46,6 +46,7 @@ func TestShouldPin(t *testing.T) {
 		{"我g掉,了 啊!!!", false},
 		{"!!!啊啊啊！！！我g掉,了 啊,!!!cao!!!", false},
 		{"!!!啊啊啊！！！我g掉了 啊,!!!cao!!!", true},
+		{"!!!啊啊啊！！！我this is a test了 啊,!!!cao!!!", true},
 	}
 	for _, test := range tests {
 		if shouldPin(test[0].(string)) != test[1].(bool) {

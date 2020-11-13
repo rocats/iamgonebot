@@ -47,9 +47,9 @@ func trim(str string) string {
 
 func shouldPin(str string) bool {
 	t := trim(str)
-	return strings.HasPrefix(t, "我") &&
+	return len([]rune(t)) > 2 && strings.HasPrefix(t, "我") &&
 		strings.HasSuffix(t, "了") &&
-		!strings.ContainsAny(t, "，,") &&
+		strings.IndexFunc(t, func(r rune) bool { return unicode.IsPunct(r) }) < 0 &&
 		!consecutiveHanLetterMixedSpace(t)
 }
 
